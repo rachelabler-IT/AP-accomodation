@@ -1,0 +1,9 @@
+{
+  "name": "Exam Writing App",
+  "short_name": "Exam Writer",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "background_color": "#1e1e1e",
+  "theme_color": "#1e1e1e",
+  "orientation": "landscape"
+}

@@ -1,101 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Typewriter App</title>
+<meta charset="UTF-8">
+<title>Exam Writing App</title>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-      font-family: monospace;
-    }
+<!-- PWA manifest (IMPORTANT STEP 2) -->
+<link rel="manifest" href="manifest.json">
 
-    .container {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 10px;
+<style>
+  body {
+    margin: 0;
+    background: #1e1e1e;
+    color: #f5f5f5;
+    font-family: Georgia, serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .toolbar {
+    padding: 8px;
+    background: #2a2a2a;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  input {
+    padding: 6px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+  }
+
+  button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background: #4caf50;
+    color: white;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #45a049;
+  }
+
+  .status {
+    margin-left: auto;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  textarea {
+    flex: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    color: inherit;
+
+    font-size: 20px;
+    line-height: 1.7;
+    padding: 40px;
+
+    caret-color: white;
+  }
+
+  /* ✨ Start typing overlay */
+  #overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 26px;
+    pointer-events: none;
+    animation: blink 1.2s infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0.2; }
+  }
+
+  /* 🖨 Print mode */
+  @media print {
+    .toolbar, #overlay {
+      display: none;
     }
 
     textarea {
-      width: 100%;
-      height: 85vh;
-      font-size: 18px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      outline: none;
-      resize: none;
+      padding: 1in;
+      font-size: 12pt;
+      background: white;
+      color: black;
     }
 
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-bottom: 8px;
+    body {
+      background: white;
     }
-
-    button {
-      padding: 6px 12px;
-      font-family: monospace;
-      cursor: pointer;
-    }
-  </style>
+  }
+</style>
 </head>
 
 <body>
-  <div class="container">
 
-    <div class="toolbar">
-      <button onclick="downloadText()">Download</button>
-      <button onclick="clearText()">Clear</button>
-    </div>
+<!-- Overlay prompt -->
+<div id="overlay">Start typing...</div>
 
-    <textarea id="editor" placeholder="Start typing..." autofocus></textarea>
-  </div>
+<!-- Toolbar (download + status only for kiosk simplicity) -->
+<div class="toolbar">
+  <input id="filename" placeholder="filename.txt" />
+  <button id="downloadBtn">Download</button>
+  <span class="status" id="status">Saved</span>
+</div>
 
-  <script>
-    const editor = document.getElementById("editor");
-    const STORAGE_KEY = "typewriter_text";
+<!-- Writing area -->
+<textarea id="editor" spellcheck="false"></textarea>
 
-    // Load saved text
-    window.onload = function () {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        editor.value = saved;
-      }
+<!-- Script -->
+<script src="script.js"></script>
 
-      editor.focus();
-      window.scrollTo(0, 0);
-    };
-
-    // Autosave
-    editor.addEventListener("input", () => {
-      localStorage.setItem(STORAGE_KEY, editor.value);
-    });
-
-    // Download file (USB/print friendly)
-    function downloadText() {
-      const text = editor.value;
-      const blob = new Blob([text], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "my-writing.txt";
-      a.click();
-
-      URL.revokeObjectURL(url);
-    }
-
-    // Optional clear button
-    function clearText() {
-      if (confirm("Clear all text?")) {
-        editor.value = "";
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
-  </script>
 </body>
 </html>
