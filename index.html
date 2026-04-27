@@ -78,7 +78,7 @@
     /* typewriter feel */
     padding: 50vh 40px;
 
-    /* IMPORTANT: disables browser “helpfulness” */
+    /* disable browser writing helpers */
     spellcheck: false;
     -webkit-grammar: false;
     -webkit-spellcheck: false;
@@ -96,13 +96,18 @@
 </div>
 
 <div class="editor-container">
-  <textarea id="editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
-    placeholder="Start typing..."></textarea>
+  <textarea 
+    id="editor" 
+    spellcheck="false"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    placeholder="Start typing..."
+  ></textarea>
 </div>
 
 <script>
 const editor = document.getElementById("editor");
-const container = document.querySelector(".editor-container");
 const status = document.getElementById("status");
 
 // Load saved text
@@ -113,35 +118,10 @@ editor.addEventListener("input", () => {
   localStorage.setItem("typewriter-content", editor.value);
 
   status.textContent = "Saving...";
-  setTimeout(() => status.textContent = "Saved", 300);
-
-  centerCursor();
+  setTimeout(() => {
+    status.textContent = "Saved";
+  }, 300);
 });
-
-// Typewriter centering effect
-function centerCursor() {
-  const selectionStart = editor.selectionStart;
-  const textBefore = editor.value.substring(0, selectionStart);
-
-  const temp = document.createElement("div");
-  temp.style.position = "absolute";
-  temp.style.visibility = "hidden";
-  temp.style.whiteSpace = "pre-wrap";
-  temp.style.width = editor.clientWidth + "px";
-  temp.style.font = window.getComputedStyle(editor).font;
-  temp.textContent = textBefore;
-
-  document.body.appendChild(temp);
-  const cursorY = temp.clientHeight;
-  document.body.removeChild(temp);
-
-  const offset = cursorY - container.clientHeight / 2;
-
-  container.scrollTo({
-    top: offset,
-    behavior: "smooth"
-  });
-}
 
 // Save file
 function saveFile() {
@@ -155,7 +135,7 @@ function saveFile() {
   a.click();
 }
 
-// Focus mode
+// Focus mode toggle
 function toggleFocus() {
   document.body.classList.toggle("focus");
 }
