@@ -31,6 +31,7 @@
 
     .toolbar {
       display: flex;
+      gap: 10px;
       justify-content: flex-end;
       margin-bottom: 8px;
     }
@@ -47,7 +48,7 @@
   <div class="container">
 
     <div class="toolbar">
-      <button onclick="saveText()">Save</button>
+      <button onclick="downloadText()">Download</button>
     </div>
 
     <textarea id="editor" placeholder="Start typing..." autofocus></textarea>
@@ -55,28 +56,23 @@
 
   <script>
     const editor = document.getElementById("editor");
-    const STORAGE_KEY = "typewriter_text";
 
-    // Load saved text
     window.onload = function () {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        editor.value = saved;
-      }
-
       editor.focus();
       window.scrollTo(0, 0);
     };
 
-    // Auto-save as you type
-    editor.addEventListener("input", () => {
-      localStorage.setItem(STORAGE_KEY, editor.value);
-    });
+    function downloadText() {
+      const text = editor.value;
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
 
-    // Manual save button
-    function saveText() {
-      localStorage.setItem(STORAGE_KEY, editor.value);
-      alert("Saved!");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "my-writing.txt";
+      a.click();
+
+      URL.revokeObjectURL(url);
     }
   </script>
 </body>
