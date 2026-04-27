@@ -1,3 +1,5 @@
+console.log("SCRIPT IS RUNNING");
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const editor = document.getElementById("editor");
