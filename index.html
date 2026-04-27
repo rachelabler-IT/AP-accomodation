@@ -27,32 +27,57 @@
       border: 1px solid #ccc;
       outline: none;
       resize: none;
+    }
 
-      /* disables browser spell/grammar UI */
-      spellcheck: false;
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+
+    button {
+      padding: 6px 12px;
+      font-family: monospace;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <textarea id="editor" autofocus></textarea>
+
+    <div class="toolbar">
+      <button onclick="saveText()">Save</button>
+    </div>
+
+    <textarea id="editor" placeholder="Start typing..." autofocus></textarea>
   </div>
 
   <script>
     const editor = document.getElementById("editor");
+    const STORAGE_KEY = "typewriter_text";
 
-    // Ensure cursor starts at top (not middle of page or scrolled)
+    // Load saved text
     window.onload = function () {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        editor.value = saved;
+      }
+
       editor.focus();
-      editor.setSelectionRange(0, 0);
       window.scrollTo(0, 0);
     };
 
-    // Prevent any accidental scroll jumping
-    editor.addEventListener("focus", () => {
-      setTimeout(() => window.scrollTo(0, 0), 0);
+    // Auto-save as you type
+    editor.addEventListener("input", () => {
+      localStorage.setItem(STORAGE_KEY, editor.value);
     });
+
+    // Manual save button
+    function saveText() {
+      localStorage.setItem(STORAGE_KEY, editor.value);
+      alert("Saved!");
+    }
   </script>
 </body>
 </html>
