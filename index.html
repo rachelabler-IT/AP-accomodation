@@ -49,6 +49,7 @@
 
     <div class="toolbar">
       <button onclick="downloadText()">Download</button>
+      <button onclick="clearText()">Clear</button>
     </div>
 
     <textarea id="editor" placeholder="Start typing..." autofocus></textarea>
@@ -56,12 +57,25 @@
 
   <script>
     const editor = document.getElementById("editor");
+    const STORAGE_KEY = "typewriter_text";
 
+    // Load saved text
     window.onload = function () {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        editor.value = saved;
+      }
+
       editor.focus();
       window.scrollTo(0, 0);
     };
 
+    // Autosave
+    editor.addEventListener("input", () => {
+      localStorage.setItem(STORAGE_KEY, editor.value);
+    });
+
+    // Download file (USB/print friendly)
     function downloadText() {
       const text = editor.value;
       const blob = new Blob([text], { type: "text/plain" });
@@ -73,6 +87,14 @@
       a.click();
 
       URL.revokeObjectURL(url);
+    }
+
+    // Optional clear button
+    function clearText() {
+      if (confirm("Clear all text?")) {
+        editor.value = "";
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
   </script>
 </body>
