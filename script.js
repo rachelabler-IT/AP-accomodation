@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editor = document.getElementById("editor");
   const overlay = document.getElementById("overlay");
   const downloadBtn = document.getElementById("downloadBtn");
+  const clearBtn = document.getElementById("clearBtn");
   const status = document.getElementById("status");
 
   const STORAGE_KEY = "exam_app_content";
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.value = localStorage.getItem(STORAGE_KEY) || "";
 
   // -----------------------------
-  // CURSOR FIX (always visible on load)
+  // CURSOR FIX (always visible)
   // -----------------------------
   setTimeout(() => {
     editor.focus();
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 200);
 
   // -----------------------------
-  // OVERLAY LOGIC (start typing screen)
+  // OVERLAY LOGIC
   // -----------------------------
   function updateOverlay() {
     overlay.style.display =
@@ -54,11 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // DOWNLOAD (exam-safe version)
+  // DOWNLOAD (exam-safe)
   // -----------------------------
   downloadBtn.addEventListener("click", () => {
-
-    console.log("Download triggered");
 
     status.textContent = "Preparing download...";
 
@@ -88,16 +87,37 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // PRINT SUPPORT (optional)
+  // CLEAR (reset for next student)
+  // -----------------------------
+  clearBtn.addEventListener("click", () => {
+
+    const confirmClear = prompt("Type CLEAR to reset for next student:");
+
+    if (confirmClear !== "CLEAR") return;
+
+    editor.value = "";
+    localStorage.removeItem(STORAGE_KEY);
+
+    updateOverlay();
+
+    status.textContent = "Cleared";
+    setTimeout(() => {
+      status.textContent = "Autosaved";
+    }, 1500);
+
+    editor.focus();
+  });
+
+  // -----------------------------
+  // PRINT (optional)
   // -----------------------------
   window.printDocument = function () {
     window.print();
   };
 
   // -----------------------------
-  // BASIC LOCKDOWN BEHAVIOR (soft, Chrome-safe)
+  // BASIC LOCKDOWN (soft)
   // -----------------------------
-
   document.addEventListener("contextmenu", (e) => e.preventDefault());
 
   document.addEventListener("keydown", (e) => {
