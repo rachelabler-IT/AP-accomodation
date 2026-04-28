@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const editor = document.getElementById("editor");
   const overlay = document.getElementById("overlay");
   const downloadBtn = document.getElementById("downloadBtn");
-  const filenameInput = document.getElementById("filename");
   const status = document.getElementById("status");
 
   const STORAGE_KEY = "exam_app_content";
@@ -16,45 +15,58 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.value = localStorage.getItem(STORAGE_KEY) || "";
 
   // -----------------------------
-  // FORCE CURSOR FOCUS (fix Chromebook issue)
+  // CURSOR FIX (always visible on load)
   // -----------------------------
   setTimeout(() => {
     editor.focus();
-    editor.setSelectionRange(editor.value.length, editor.value.length);
-  }, 120);
+
+    if (editor.value.length === 0) {
+      editor.setSelectionRange(0, 0);
+    } else {
+      editor.setSelectionRange(editor.value.length, editor.value.length);
+    }
+  }, 200);
 
   // -----------------------------
-  // OVERLAY LOGIC
+  // OVERLAY LOGIC (start typing screen)
   // -----------------------------
   function updateOverlay() {
-    overlay.style.display = editor.value.length === 0 ? "block" : "none";
+    overlay.style.display =
+      editor.value.trim().length === 0 ? "block" : "none";
   }
   updateOverlay();
 
   // -----------------------------
   // AUTOSAVE
   // -----------------------------
+  let saveTimer;
+
   editor.addEventListener("input", () => {
     localStorage.setItem(STORAGE_KEY, editor.value);
     updateOverlay();
 
-    status.textContent = "Saving...";
-    clearTimeout(window.__saveTimer);
+    status.textContent = "Autosaving...";
 
-    window.__saveTimer = setTimeout(() => {
-      status.textContent = "Saved";
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      status.textContent = "Autosaved";
     }, 300);
   });
 
   // -----------------------------
-  // DOWNLOAD (FIXED + CHROME SAFE)
+  // DOWNLOAD (exam-safe version)
   // -----------------------------
   downloadBtn.addEventListener("click", () => {
 
     console.log("Download triggered");
 
+    status.textContent = "Preparing download...";
+
     const text = editor.value;
-    const filename = (filenameInput && filenameInput.value) || "document.txt";
+
+    const filename = `AP_Exam_${new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-")}.txt`;
 
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
@@ -63,63 +75,62 @@ document.addEventListener("DOMContentLoaded", () => {
     link.href = url;
     link.download = filename;
 
-    // Required for ChromeOS reliability
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-    status.textContent = "Downloaded";
-    setTimeout(() => status.textContent = "Saved", 1000);
+    status.textContent = "Saved to Downloads folder";
+    setTimeout(() => {
+      status.textContent = "Autosaved";
+    }, 2000);
   });
 
   // -----------------------------
-  // PRINT (optional but useful for exams)
+  // PRINT SUPPORT (optional)
   // -----------------------------
   window.printDocument = function () {
     window.print();
   };
 
   // -----------------------------
-  // SOFT LOCKDOWN (UI-level only)
+  // BASIC LOCKDOWN BEHAVIOR (soft, Chrome-safe)
   // -----------------------------
 
-  // Disable right-click (you already mentioned this)
-  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
 
-  // Block common shortcuts
   document.addEventListener("keydown", (e) => {
+    const blocked = ["F12", "F5"];
 
     if (
-      e.key === "F12" ||
-      e.key === "F5" ||
-      (e.ctrlKey && ["r", "t", "n", "w", "p", "s"].includes(e.key.toLowerCase()))
+      blocked.includes(e.key) ||
+      (e.ctrlKey &&
+        ["r", "t", "n", "w", "p", "s"].includes(e.key.toLowerCase()))
     ) {
       e.preventDefault();
     }
-
   });
 
-  // Refocus if user tries to leave app
   window.addEventListener("blur", () => {
     setTimeout(() => editor.focus(), 0);
   });
 
 });
 
+
+// -----------------------------
+// SERVICE WORKER REGISTRATION
+// -----------------------------
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./service-worker.js")
+    navigator.serviceWorker
+      .register("./service-worker.js")
       .then((reg) => {
-        console.log("SW registered:", reg.scope);
-
-        if (reg.installing) console.log("SW installing...");
-        if (reg.waiting) console.log("SW waiting...");
-        if (reg.active) console.log("SW active...");
+        console.log("Service Worker registered:", reg.scope);
       })
       .catch((err) => {
-        console.log("SW FAILED:", err);
+        console.log("Service Worker FAILED:", err);
       });
   });
 }
