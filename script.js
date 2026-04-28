@@ -110,12 +110,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/AP-accomodation/service-worker.js")
+    navigator.serviceWorker.register("./service-worker.js")
       .then((reg) => {
-        console.log("Service Worker registered:", reg.scope);
+        console.log("SW registered:", reg.scope);
+
+        if (reg.installing) console.log("SW installing...");
+        if (reg.waiting) console.log("SW waiting...");
+        if (reg.active) console.log("SW active...");
       })
       .catch((err) => {
-        console.log("Service Worker FAILED:", err);
+        console.log("SW FAILED:", err);
       });
   });
 }
