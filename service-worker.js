@@ -7,7 +7,6 @@ const FILES = [
   "./manifest.json"
 ];
 
-// Install and cache files
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -15,16 +14,12 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Activate immediately
 self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-// Serve cached files
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
