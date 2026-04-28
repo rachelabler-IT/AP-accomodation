@@ -1,10 +1,10 @@
 const CACHE_NAME = "exam-app-v1";
 
 const FILES = [
-  "./",
-  "./index.html",
-  "./script.js",
-  "./manifest.json"
+  "/AP-accomodation/",
+  "/AP-accomodation/index.html",
+  "/AP-accomodation/script.js",
+  "/AP-accomodation/manifest.json"
 ];
 
 self.addEventListener("install", (event) => {
