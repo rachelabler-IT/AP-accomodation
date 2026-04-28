@@ -109,7 +109,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/AP-accomodation/service-worker.js")
-    .then(() => console.log("Service Worker registered"))
-    .catch(err => console.log("SW failed", err));
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/AP-accomodation/service-worker.js")
+      .then((reg) => {
+        console.log("Service Worker registered:", reg.scope);
+      })
+      .catch((err) => {
+        console.log("Service Worker FAILED:", err);
+      });
+  });
 }
