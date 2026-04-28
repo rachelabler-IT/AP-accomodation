@@ -2,39 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Exam Writing App</title>
+<title>Exam Writer</title>
 
-<!-- PWA manifest (IMPORTANT STEP 2) -->
-<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
   body {
     margin: 0;
-    background: #1e1e1e;
-    color: #f5f5f5;
+    background: #ffffff;
+    color: #000000;
     font-family: Georgia, serif;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    position: relative;
-    overflow: hidden;
   }
 
   .toolbar {
-    padding: 8px;
-    background: #2a2a2a;
+    padding: 10px;
+    background: #f2f2f2;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     align-items: center;
-  }
-
-  
-
-  input {
-    padding: 6px;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
   }
 
   button {
@@ -57,74 +45,83 @@
     opacity: 0.7;
   }
 
-  textarea {
+  .editor-container {
     flex: 1;
-    width: 100%;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+
+  textarea {
+    width: 700px;
+    max-width: 90%;
     border: none;
     outline: none;
     resize: none;
     background: transparent;
     color: inherit;
 
-    font-size: 20px;
-    line-height: 1.7;
-    padding: 40px;
+    font-size: 18px;
+    line-height: 1.6;
 
-    caret-color: white;
+    /* Cursor near top */
+    padding: 120px 40px 40px 40px;
+
+    spellcheck: false;
   }
 
-  /* ✨ Start typing overlay */
   #overlay {
     position: absolute;
-    top: 50%;
+    top: 120px;
     left: 50%;
-    transform: translate(-50%, -50%);
-    color: rgba(255,255,255,0.3);
-    font-size: 26px;
+    transform: translateX(-50%);
+    font-size: 20px;
+    opacity: 0.3;
     pointer-events: none;
-    animation: blink 1.2s infinite;
+    animation: blink 1.5s infinite;
   }
 
   @keyframes blink {
-    50% { opacity: 0.2; }
+    0% { opacity: 0.2; }
+    50% { opacity: 0.6; }
+    100% { opacity: 0.2; }
   }
 
-  /* 🖨 Print mode */
-  @media print {
-    .toolbar, #overlay {
-      display: none;
-    }
-
-    textarea {
-      padding: 1in;
-      font-size: 12pt;
-      background: white;
-      color: black;
-    }
-
-    body {
-      background: white;
-    }
+  .help {
+    position: absolute;
+    bottom: 10px;
+    font-size: 12px;
+    opacity: 0.5;
   }
 </style>
 </head>
 
 <body>
 
-<!-- Overlay prompt -->
-<div id="overlay">Start typing...</div>
-
-<!-- Toolbar (download + status only for kiosk simplicity) -->
 <div class="toolbar">
-  <input id="filename" placeholder="filename.txt" />
   <button id="downloadBtn">Download</button>
-  <span class="status" id="status">Saved</span>
+  <button id="clearBtn">Clear</button>
+  <span class="status" id="status">Ready</span>
 </div>
 
-<!-- Writing area -->
-<textarea id="editor" spellcheck="false"></textarea>
+<div class="editor-container">
+  <textarea
+    id="editor"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+    placeholder=""
+  ></textarea>
 
-<!-- Script -->
+  <div id="overlay">Start typing...</div>
+
+  <div class="help">
+    File saves to: Files → Downloads
+  </div>
+</div>
+
 <script src="script.js"></script>
 
 </body>
