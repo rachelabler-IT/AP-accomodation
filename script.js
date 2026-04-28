@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editor = document.getElementById("editor");
   const overlay = document.getElementById("overlay");
   const downloadBtn = document.getElementById("downloadBtn");
+  const printBtn = document.getElementById("printBtn");
   const clearBtn = document.getElementById("clearBtn");
   const status = document.getElementById("status");
 
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   editor.value = localStorage.getItem(STORAGE_KEY) || "";
 
   // -----------------------------
-  // CURSOR FIX (always visible)
+  // CURSOR FIX
   // -----------------------------
   setTimeout(() => {
     editor.focus();
@@ -29,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 200);
 
   // -----------------------------
-  // OVERLAY LOGIC
+  // OVERLAY
   // -----------------------------
   function updateOverlay() {
     overlay.style.display =
@@ -55,19 +56,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // DOWNLOAD (exam-safe)
+  // DOWNLOAD
   // -----------------------------
   downloadBtn.addEventListener("click", () => {
 
-    status.textContent = "Preparing download...";
-
-    const text = editor.value;
+    status.textContent = "Downloading...";
 
     const filename = `AP_Exam_${new Date()
       .toISOString()
       .replace(/[:.]/g, "-")}.txt`;
 
-    const blob = new Blob([text], { type: "text/plain" });
+    const blob = new Blob([editor.value], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
@@ -80,18 +79,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-    status.textContent = "Saved to Downloads folder";
-    setTimeout(() => {
-      status.textContent = "Autosaved";
-    }, 2000);
+    status.textContent = "Saved to Downloads";
+    setTimeout(() => status.textContent = "Autosaved", 2000);
   });
 
   // -----------------------------
-  // CLEAR (reset for next student)
+  // PRINT (NEW)
+  // -----------------------------
+  printBtn.addEventListener("click", () => {
+    status.textContent = "Opening print dialog...";
+    window.print();
+    setTimeout(() => status.textContent = "Autosaved", 2000);
+  });
+
+  // -----------------------------
+  // CLEAR
   // -----------------------------
   clearBtn.addEventListener("click", () => {
 
-    const confirmClear = prompt("Type CLEAR to reset for next student:");
+    const confirmClear = prompt("Type CLEAR to reset:");
 
     if (confirmClear !== "CLEAR") return;
 
@@ -101,24 +107,15 @@ document.addEventListener("DOMContentLoaded", () => {
     updateOverlay();
 
     status.textContent = "Cleared";
-    setTimeout(() => {
-      status.textContent = "Autosaved";
-    }, 1500);
+    setTimeout(() => status.textContent = "Autosaved", 1500);
 
     editor.focus();
   });
 
   // -----------------------------
-  // PRINT (optional)
-  // -----------------------------
-  window.printDocument = function () {
-    window.print();
-  };
-
-  // -----------------------------
   // BASIC LOCKDOWN (soft)
   // -----------------------------
-  document.addEventListener("contextmenu", (e) => e.preventDefault());
+  document.addEventListener("contextmenu", e => e.preventDefault());
 
   document.addEventListener("keydown", (e) => {
     const blocked = ["F12", "F5"];
@@ -138,19 +135,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-
 // -----------------------------
-// SERVICE WORKER REGISTRATION
+// SERVICE WORKER
 // -----------------------------
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("./service-worker.js")
-      .then((reg) => {
-        console.log("Service Worker registered:", reg.scope);
-      })
-      .catch((err) => {
-        console.log("Service Worker FAILED:", err);
-      });
+      .then(reg => console.log("SW registered:", reg.scope))
+      .catch(err => console.log("SW failed:", err));
   });
 }
