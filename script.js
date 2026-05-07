@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (
       blocked.includes(e.key) ||
       (e.ctrlKey &&
-        ["r", "t", "n", "w", "p", "s"].includes(e.key.toLowerCase()))
+        ["r", "t", "n", "w", "s"].includes(e.key.toLowerCase()))
     ) {
       e.preventDefault();
     }
