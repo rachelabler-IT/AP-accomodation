@@ -86,11 +86,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   // PRINT (NEW)
   // -----------------------------
-  printBtn.addEventListener("click", () => {
-    status.textContent = "Opening print dialog...";
-    window.print();
-    setTimeout(() => status.textContent = "Autosaved", 2000);
-  });
+printBtn.addEventListener("click", () => {
+  const printArea = document.getElementById("printArea");
+  printArea.textContent = editor.value;
+
+  status.textContent = "Opening print dialog...";
+  window.print();
+  setTimeout(() => status.textContent = "Autosaved", 2000);
+});
+
 
   // -----------------------------
   // CLEAR
