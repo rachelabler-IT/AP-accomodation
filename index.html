@@ -93,9 +93,18 @@
       display: none;
     }
 
-    textarea {
-      width: 100%;
-      padding: 0;
+    /* ⭐ ADDED — hide textarea during printing */
+    #editor {
+      display: none;
+    }
+
+    /* ⭐ ADDED — show printable div */
+    #printArea {
+      display: block;
+      white-space: pre-wrap;
+      font-size: 18px;
+      line-height: 1.6;
+      padding: 40px;
     }
   }
 </style>
@@ -118,6 +127,9 @@
     File saves to: Files → Downloads (if used)
   </div>
 </div>
+
+<!-- ⭐ ADDED — hidden print container -->
+<div id="printArea" style="display:none;"></div>
 
 <script src="script.js"></script>
 
