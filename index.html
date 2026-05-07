@@ -85,26 +85,36 @@
     opacity: 0.5;
   }
 
-  /* PRINT CLEANUP */
+  /* --- PRINT CLEANUP --- */
+  
+  /* This part stays hidden while you are typing */
+  #printArea {
+    display: none;
+  }
+
   @media print {
-    .toolbar,
-    #overlay,
-    .help {
-      display: none;
+    /* 1. Hide everything UI-related */
+    .toolbar, #overlay, .help, .editor-container {
+      display: none !important;
     }
 
-    /* ⭐ ADDED — hide textarea during printing */
-    #editor {
-      display: none;
-    }
-
-    /* ⭐ ADDED — show printable div */
+    /* 2. Show the printable div and make it look like a document */
     #printArea {
+      display: block !important;
+      white-space: pre-wrap; /* Keeps paragraphs and spacing */
+      word-wrap: break-word;
+      font-size: 12pt;
+      line-height: 1.5;
+      color: black;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* 3. Ensure the body doesn't try to flex-center the printed text */
+    body {
       display: block;
-      white-space: pre-wrap;
-      font-size: 18px;
-      line-height: 1.6;
-      padding: 40px;
+      height: auto;
     }
   }
 </style>
@@ -126,11 +136,10 @@
   <div class="help">
     File saves to: Files → Downloads (if used)
   </div>
-
-
-<!-- ⭐ ADDED — hidden print container -->
-<div id="printArea" style="display:none;"></div>
 </div>
+
+<div id="printArea"></div>
+
 <script src="script.js"></script>
 
 </body>
