@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const printBtn = document.getElementById("printBtn");
   const clearBtn = document.getElementById("clearBtn");
   const status = document.getElementById("status");
+  const printArea = document.getElementById("printArea");
 
   const STORAGE_KEY = "exam_app_content";
 
@@ -84,17 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // -----------------------------
-  // PRINT (NEW)
+  // PRINT (MULTI-PAGE FIX)
   // -----------------------------
-printBtn.addEventListener("click", () => {
-  const printArea = document.getElementById("printArea");
-  printArea.textContent = editor.value;
+  printBtn.addEventListener("click", () => {
+    printArea.textContent = editor.value;
 
-  status.textContent = "Opening print dialog...";
-  window.print();
-  setTimeout(() => status.textContent = "Autosaved", 2000);
-});
-
+    status.textContent = "Opening print dialog...";
+    window.print();
+    setTimeout(() => status.textContent = "Autosaved", 2000);
+  });
 
   // -----------------------------
   // CLEAR
@@ -127,7 +126,7 @@ printBtn.addEventListener("click", () => {
     if (
       blocked.includes(e.key) ||
       (e.ctrlKey &&
-        ["r", "t", "n", "w", "s"].includes(e.key.toLowerCase()))
+        ["r", "t", "n", "w", "s", "p"].includes(e.key.toLowerCase()))
     ) {
       e.preventDefault();
     }
