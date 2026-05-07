@@ -1,7 +1,6 @@
 console.log("SCRIPT IS RUNNING");
 
 document.addEventListener("DOMContentLoaded", () => {
-
   const editor = document.getElementById("editor");
   const overlay = document.getElementById("overlay");
   const downloadBtn = document.getElementById("downloadBtn");
@@ -22,7 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
   setTimeout(() => {
     editor.focus();
-
     if (editor.value.length === 0) {
       editor.setSelectionRange(0, 0);
     } else {
@@ -43,13 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // AUTOSAVE
   // -----------------------------
   let saveTimer;
-
   editor.addEventListener("input", () => {
     localStorage.setItem(STORAGE_KEY, editor.value);
     updateOverlay();
 
     status.textContent = "Autosaving...";
-
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       status.textContent = "Autosaved";
@@ -60,73 +56,60 @@ document.addEventListener("DOMContentLoaded", () => {
   // DOWNLOAD
   // -----------------------------
   downloadBtn.addEventListener("click", () => {
-
     status.textContent = "Downloading...";
-
-    const filename = `AP_Exam_${new Date()
-      .toISOString()
-      .replace(/[:.]/g, "-")}.txt`;
-
+    const filename = `AP_Exam_${new Date().toISOString().replace(/[:.]/g, "-")}.txt`;
     const blob = new Blob([editor.value], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
     link.download = filename;
-
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-
     status.textContent = "Saved to Downloads";
-    setTimeout(() => status.textContent = "Autosaved", 2000);
+    setTimeout(() => (status.textContent = "Autosaved"), 2000);
   });
 
   // -----------------------------
-  // PRINT (MULTI-PAGE FIX)
+  // PRINT (FIXED)
   // -----------------------------
   printBtn.addEventListener("click", () => {
-    printArea.textContent = editor.value;
+    // We use innerText to preserve the visual formatting of the textarea
+    printArea.innerText = editor.value;
 
     status.textContent = "Opening print dialog...";
-    window.print();
-    setTimeout(() => status.textContent = "Autosaved", 2000);
+    
+    // Tiny delay to ensure the browser updates the hidden div before printing
+    setTimeout(() => {
+      window.print();
+      status.textContent = "Autosaved";
+    }, 50);
   });
 
   // -----------------------------
   // CLEAR
   // -----------------------------
   clearBtn.addEventListener("click", () => {
-
     const confirmClear = prompt("Type CLEAR to reset:");
-
     if (confirmClear !== "CLEAR") return;
-
     editor.value = "";
     localStorage.removeItem(STORAGE_KEY);
-
     updateOverlay();
-
     status.textContent = "Cleared";
-    setTimeout(() => status.textContent = "Autosaved", 1500);
-
+    setTimeout(() => (status.textContent = "Autosaved"), 1500);
     editor.focus();
   });
 
   // -----------------------------
   // BASIC LOCKDOWN (soft)
   // -----------------------------
-  document.addEventListener("contextmenu", e => e.preventDefault());
-
+  document.addEventListener("contextmenu", (e) => e.preventDefault());
   document.addEventListener("keydown", (e) => {
     const blocked = ["F12", "F5"];
-
     if (
       blocked.includes(e.key) ||
-      (e.ctrlKey &&
-        ["r", "t", "n", "w", "s", "p"].includes(e.key.toLowerCase()))
+      (e.ctrlKey && ["r", "t", "n", "w", "s", "p"].includes(e.key.toLowerCase()))
     ) {
       e.preventDefault();
     }
@@ -135,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("blur", () => {
     setTimeout(() => editor.focus(), 0);
   });
-
 });
 
 // -----------------------------
@@ -145,7 +127,7 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("./service-worker.js")
-      .then(reg => console.log("SW registered:", reg.scope))
-      .catch(err => console.log("SW failed:", err));
+      .then((reg) => console.log("SW registered:", reg.scope))
+      .catch((err) => console.log("SW failed:", err));
   });
 }
